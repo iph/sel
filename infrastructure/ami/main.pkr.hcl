@@ -55,7 +55,7 @@ build {
   }
 
   provisioner "file" {
-    source = "srv/core.service"
+    source = "core.service"
     destination = "/tmp/core.service"
   }
 
