@@ -1,0 +1,9 @@
+[Unit]
+Description = some random service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/srv
+
+[Install]
+WantedBy=multi-user.target  
