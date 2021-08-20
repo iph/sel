@@ -1,4 +1,3 @@
-cargo-features = ["resolver"]
 
 [package]
 name = "sel-server"
@@ -7,6 +6,17 @@ authors = ["Sean Tyler Myers <seanmyers0608@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "sel"
+doctest = false
+
+[[bin]]
+name = "sel-server"
+path = "src/bin/main.rs"
+
+[[bin]]
+name = "sel-client"
+path = "src/bin/client.rs"
 
 [dependencies]
 coinbase-pro-rs = "0.7.1"
