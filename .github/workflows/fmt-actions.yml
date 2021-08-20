@@ -21,4 +21,4 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: --manifest-path sel-server/Cargo.toml -- -D warnings
+          args: --manifest-path sel-server/Cargo.toml -- -Adead-code -D warnings
