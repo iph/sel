@@ -1,6 +1,7 @@
-use coinbase_pro_rs::{ASync, Public, MAIN_URL};
+use coinbase_pro_rs::{ASync, Public, MAIN_URL, CBError};
 use hyper::{service::make_service_fn, service::service_fn, Body, Request, Response, Server};
 use std::convert::Infallible;
+use async_trait::async_trait;
 use std::net::SocketAddr;
 use std::time::Instant;
 use std::fmt::Debug;
@@ -26,6 +27,7 @@ struct ScannedProduct {
 //
 // The remaining statuses are Expired (time to achieve ended) or Error. Error can only be achieved
 // from PendingFill, as it usually means there are inadequate funds and it can't be executed on.
+#[derive(PartialEq, Clone, Debug)]
 enum ExecutionStatus {
     // Waiting is within the time of execution,
     Waiting,
@@ -37,8 +39,9 @@ enum ExecutionStatus {
     Error
 }
 
+#[async_trait]
 trait ProvideProduct {
-    fn get_products(&self) -> Result<Vec<Product>, dyn Error>;
+    async fn get_products(&self) -> Result<Vec<Product>, CBError>;
 }
 
 impl Default for ExecutionStatus {
@@ -58,12 +61,13 @@ struct StoredBet {
 }
 
 struct CoinBaseClient {
-    client: Public<Async>
+    client: Public<ASync>
 }
 
+#[async_trait]
 impl ProvideProduct for CoinBaseClient {
-    fn get_products(&self) -> Result<Vec<Product>, dyn Error> {
-        client.get_products().await?
+    async fn get_products(&self) -> Result<Vec<Product>, CBError> {
+        self.client.get_products().await
     }
 }
 #[tokio::main]
@@ -84,8 +88,8 @@ async fn main() {
     }
 }
 
-async fn get_currencies(client: &impl ProvideProduct, currency: &str) -> Result<Vec<ScannedProduct>, &str> {
-    let products = client.get_products().await.unwrap();
+async fn get_currencies(client: &impl ProvideProduct, currency: &str) -> Result<Vec<ScannedProduct>, CBError> {
+    let products = client.get_products().await?;
     Ok(products
         .iter()
         .filter(|&p| p.quote_currency == currency)
