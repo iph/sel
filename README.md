@@ -1,7 +1,11 @@
 # Sel
 
-This is mostly an experimental repo to see if I can get a full CI/CD pipeline with cdk and rust, using github actions for the CI and then deploy to a single
-devo -> production codepipeline.
+## Premise
+
+BUY BUY BUY, SELL SELL `SEL`
+
+It's dumb. This is a practice run of using github actions + CI/CD in a code pipeline for a basic server
+that runs my `bets` from coinbase (essentially setting limits on when to enter and leave).
 
 Essentially:
 
