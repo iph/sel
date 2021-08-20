@@ -1,12 +1,12 @@
-use coinbase_pro_rs::{ASync, Public, MAIN_URL, CBError};
+use async_trait::async_trait;
+use coinbase_pro_rs::structs::public::Product;
+use coinbase_pro_rs::{ASync, CBError, Public, MAIN_URL};
 use hyper::{service::make_service_fn, service::service_fn, Body, Request, Response, Server};
 use std::convert::Infallible;
-use async_trait::async_trait;
+use std::error::Error;
+use std::fmt::Debug;
 use std::net::SocketAddr;
 use std::time::Instant;
-use std::fmt::Debug;
-use coinbase_pro_rs::structs::public::Product;
-use std::error::Error;
 
 #[derive(PartialEq, Clone, Debug)]
 struct ScannedProduct {
@@ -36,7 +36,7 @@ enum ExecutionStatus {
     PendingExit,
     Exited,
     Expired,
-    Error
+    Error,
 }
 
 #[async_trait]
@@ -46,7 +46,7 @@ trait ProvideProduct {
 
 impl Default for ExecutionStatus {
     fn default() -> Self {
-       ExecutionStatus::Waiting
+        ExecutionStatus::Waiting
     }
 }
 
@@ -57,11 +57,11 @@ struct StoredBet {
     enter_amount: f64,
     stop_loss: f64,
     stop_gain: f64,
-    status: ExecutionStatus
+    status: ExecutionStatus,
 }
 
 struct CoinBaseClient {
-    client: Public<ASync>
+    client: Public<ASync>,
 }
 
 #[async_trait]
@@ -74,7 +74,7 @@ impl ProvideProduct for CoinBaseClient {
 async fn main() {
     // Do some startup searching, spin up background thread to do work.
     let client: Public<ASync> = Public::new_with_keep_alive(MAIN_URL, false);
-    let client = CoinBaseClient{client};
+    let client = CoinBaseClient { client };
     let currencies = get_currencies(&client, "USD").await.unwrap();
     for currency in currencies.iter() {
         println!("Currency: {:?}", currency);
@@ -88,7 +88,10 @@ async fn main() {
     }
 }
 
-async fn get_currencies(client: &impl ProvideProduct, currency: &str) -> Result<Vec<ScannedProduct>, CBError> {
+async fn get_currencies(
+    client: &impl ProvideProduct,
+    currency: &str,
+) -> Result<Vec<ScannedProduct>, CBError> {
     let products = client.get_products().await?;
     Ok(products
         .iter()
