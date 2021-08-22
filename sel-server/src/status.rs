@@ -1,10 +1,7 @@
 use async_trait::async_trait;
 use coinbase_pro_rs::structs::public::Product;
-use coinbase_pro_rs::{ASync, CBError, Public, MAIN_URL};
-use hyper::{service::make_service_fn, service::service_fn, Body, Request, Response, Server};
-use std::convert::Infallible;
+use coinbase_pro_rs::{ASync, CBError, Public};
 use std::fmt::Debug;
-use std::net::SocketAddr;
 use std::time::Instant;
 
 #[derive(PartialEq, Clone, Debug)]
